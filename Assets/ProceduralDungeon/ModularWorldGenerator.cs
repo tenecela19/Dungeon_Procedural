@@ -41,10 +41,11 @@ public class ModularWorldGenerator : MonoBehaviour
 	public Module NewModule { get => newModule; set => newModule = value; }
     public bool DungeonHasEnded { get => _dungeonHasEnded; set => _dungeonHasEnded = value; }
 
+	public Transform Dungeon;
     IEnumerator Start()
 	{
 		_dungeonHasEnded = false;
-		var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation);
+		var startModule = (Module)Instantiate(StartModule, transform.position, transform.rotation, Dungeon);
 		_pendingExits = new List<ModuleConnector>(startModule.GetExits());
 
 		for (int iteration = 0; iteration < Iterations; iteration++)
@@ -65,7 +66,7 @@ public class ModularWorldGenerator : MonoBehaviour
                     {
 						var newTag = GetRandom(pendingExit.Tags);
 						var newModulePrefab = GetRandomWithTag(Modules, newTag);
-						newModule = (Module)Instantiate(newModulePrefab);
+						newModule = (Module)Instantiate(newModulePrefab, Dungeon);
 					}
 
 					if (newModule != null)
@@ -88,7 +89,7 @@ public class ModularWorldGenerator : MonoBehaviour
 		{
 			if (!item.IsConnected && item.OtherConnector == null)
 			{
-				newModule = (Module)Instantiate(item.Wall);
+				newModule = (Module)Instantiate(item.Wall, Dungeon);
 				var newModuleExits = newModule.GetExits();
 				var exitToMatch = newModuleExits.FirstOrDefault(x => x.IsDefault) ?? GetRandom(newModuleExits);
 				MatchExits(item, exitToMatch);
